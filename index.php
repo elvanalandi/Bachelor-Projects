@@ -13,29 +13,128 @@
 		}
 	</style>
 </head>
-<body>
+<body onload="load()">
 	<div class="container">
 		<form class="form-group" method="POST">
 			<select name="command" id="command" class="form-control form-control-lg">
 			  <option value="START">Power On</option>
 			  <option value="STOP">Power Off</option>
 			  <option value="SUSPEND">Suspend</option>
+			  <option value="LCLONE">Linked Clone</option>
+			  <option value="FCLONE">Full Clone</option>
+			  <option value="DELETE">Delete</option>
+			  <option value="HTOG">Send File</option>
+			  <option value="GTOH">Retrieve File</option>
+			  <option value="SCRIPT">Run Script</option>
+			  <option value="SNAPSHOT">Snapshot</option>
+			  <option value="REVERT">Revert</option>
+			  <option value="SCREENSHOT">Screenshot</option>
 			</select>
 			<br>
+			<div id="path">Path <input type="text" name="path"></div>
+			<div id="filename">File name <input type="text" name="filename"></div> 	<!-- KHUSUS GUEST TO HOST -->
+			<div id="ssname">Name <input type="text" name="ssname"></div>			<!-- KHUSUS SNAPSHOT -->
+			<div id="ssdesc">Description <input type="text" name="ssdesc"></div>	<!-- KHUSUS SnAPSHOT -->
+			<input type="file" id="file" name="file">
 			<button type="submit" id="submit" class="btn btn-primary mb-2">Submit</button>
 		</form>
 	</div>
+		<iframe src="http://192.168.159.131:6080/vnc.html?autoconnect=true&host=192.168.159.131&port=6080&password=tekvir" height="100%" width="100%"></iframe>
 
 	<?php 
-	if(isset($_POST['command'])){ 
-		exec("VIx.exe ".$_POST['command'],$output,$return);
+	if(isset($_POST['command'])){
+		$interpreter = "";
+		$ssname = "";
+		$ssdesc = "";
+		$filename = "";
+		if($_POST['command'] == 'SCRIPT'){
+			$file = $_POST['file'];
+			if($file[strlen($file)-2] == 'p' && $file[strlen($file)-1] == 'y'){
+				$interpreter = "python";
+			}
+			else if($file[strlen($file)-2] == 's' && $file[strlen($file)-1] == 'h'){
+				$interpreter = "bash";
+			}
+			else if($file[strlen($file)-2] == 'p' && $file[strlen($file)-1] == 'l'){
+				$interpreter = "perl";
+			}
+		}
+		if($_POST['command'] == 'GTOH'){
+			$filename = $_POST['filename'];
+		}
+		if($_POST['command'] == 'SNAPSHOT'){
+			$ssname = $_POST['ssname'];
+			$ssdesc = $_POST['ssdesc'];
+		}		
+
+		exec("VIx.exe ".$_POST['command']." ".$_POST['path']." ".$_POST['file']." ".$interpreter." ".$filename." ".$ssname." ".$ssdesc,$output,$return);
+
+		echo $_POST['command']." ".$_POST['path']." ".$_POST['file']." ".$interpreter." ".$filename." ".$ssname." ".$ssdesc;
 		if(!$return){
-			echo "Success ".$_POST['command'];
+			echo "Success ".$_POST['command']." ".$_POST['path']." ".$_POST['file'];
+			echo $interpreter;
 		}
 		else{
-			echo "Failed ".$_POST['command'];
+			echo "Failed ".$_POST['command']." ".$_POST['path']." ".$_POST['file'];
+			echo $interpreter;
 		}
 	}
 	?>
+
+	<script>
+		function load(){
+			$("#path").hide();
+			$("#filename").hide();
+			$("#file").hide();
+			$("#ssname").hide();
+			$("#ssdesc").hide();
+		}
+
+		$("#command").change(function(){
+			var command = $("#command").val();
+			if(command == "LCLONE" || command == "FCLONE" || command == "DELETE"){
+				$("#path").show();
+				$("#filename").hide();
+				$("#file").hide();
+				$("#ssname").hide();
+				$("#ssdesc").hide();
+			}
+			else if(command == "HTOG"){
+				$("#path").show();
+				$("#filename").hide();
+				$("#file").show();
+				$("#ssname").hide();
+				$("#ssdesc").hide();
+			}
+			else if(command == "GTOH"){
+				$("#path").show();
+				$("#filename").show();
+				$("#file").hide();
+				$("#ssname").hide();
+				$("#ssdesc").hide();
+			}
+			else if(command == "SNAPSHOT"){
+				$("#path").hide();
+				$("#filename").hide();
+				$("#file").hide();
+				$("#ssname").show();
+				$("#ssdesc").show();
+			}
+			else if(command == "SCRIPT"){
+				$("#path").hide();
+				$("#filename").hide();
+				$("#file").show();
+				$("#ssname").hide();
+				$("#ssdesc").hide();
+			}
+			else{
+				$("#path").hide();
+				$("#filename").hide();
+				$("#file").hide();
+				$("#ssname").hide();
+				$("#ssdesc").hide();
+			}
+		});
+	</script>
 </body>
 </html>
