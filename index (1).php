@@ -12,7 +12,7 @@
 			text-align: center;
 		}
 		body{
-			background-image: url('bg-01.jpg');
+			background-image: url('images/bg-01.jpg');
         	background-size: cover;
         	font-family: "Comic Sans MS", cursive, sans-serif;
 		}
@@ -21,7 +21,7 @@
 <body onload="load()">
 	<div class="container">
 		<form class="form-group" method="POST">
-			<select name="command" id="command" class="form-control form-control-lg">
+			<select name="command" id="command" class="form-control form-control-lg" style="margin-top: 40px;">
 			  <option value="START">Power On</option>
 			  <option value="STOP">Power Off</option>
 			  <option value="SUSPEND">Suspend</option>
@@ -36,12 +36,12 @@
 			  <option value="SCREENSHOT">Screenshot</option>
 			</select>
 			<br>
-			<div id="path" style="width: 5px;">Path <input type="text" name="path"></div>
-			<div id="filename" style="width: 5px;">File name <input type="text" name="filename"></div> 	<!-- KHUSUS GUEST TO HOST -->
-			<div id="ssname" style="width: 5px;">Name <input type="text" name="ssname"></div>			<!-- KHUSUS SNAPSHOT -->
-			<div id="ssdesc" style="width: 5px;">Description <input type="text" name="ssdesc"></div>	<!-- KHUSUS SnAPSHOT -->
+			<div id="path" style="width: 5px;"><b>Path </b><input type="text" name="path"></div>
+			<div id="filename" style="width: 5px;"><b>Filename</b> <input type="text" name="filename"></div> 	<!-- KHUSUS GUEST TO HOST -->
+			<div id="ssname"style="width: 5px;"><b>Name</b> <input type="text" name="ssname"></div>			<!-- KHUSUS SNAPSHOT -->
+			<div id="ssdesc"style="width: 5px;"><b>Description</b> <input type="text" name="ssdesc"></div>	<!-- KHUSUS SnAPSHOT -->
 			<input type="file" id="file" name="file" style="margin-top: 20px;">
-			<button type="submit" id="submit" class="btn btn-primary mb-2" style="margin-top: 20px;">Submit</button>
+			<button type="submit" id="submit" class="btn btn-primary mb-2" style="margin-top: 20px;"><b>Submit</b></button>
 		</form>
 	</div>
 		<iframe src="http://192.168.159.131:6080/vnc.html?autoconnect=true&host=192.168.159.131&port=6080&password=tekvir" height="100%" width="100%"></iframe>
@@ -51,7 +51,6 @@
 		$interpreter = "";
 		$ssname = "";
 		$ssdesc = "";
-		$filename = "";
 		if($_POST['command'] == 'SCRIPT'){
 			$file = $_POST['file'];
 			if($file[strlen($file)-2] == 'p' && $file[strlen($file)-1] == 'y'){
@@ -72,10 +71,9 @@
 			$ssdesc = $_POST['ssdesc'];
 		}		
 
-		/*exec("VIx.exe ".$_POST['command']." ".$_POST['path']." ".$_POST['file']." ".$interpreter." ".$filename." ".$ssname." ".$ssdesc,$output,$return);
+		exec("VIx.exe ".$_POST['command']." ".$_POST['path']." ".$_POST['file']." ".$interpreter." ".$filename." ".$ssname." ".$ssdesc,$output,$return);
 
-		echo $_POST['command']." ".$_POST['path']." ".$_POST['file']." ".$interpreter." ".$filename." ".$ssname." ".$ssdesc;
-		if(!$return){
+		/*if(!$return){
 			echo "Success ".$_POST['command']." ".$_POST['path']." ".$_POST['file'];
 			echo $interpreter;
 		}
@@ -104,7 +102,7 @@
 				$("#ssname").hide();
 				$("#ssdesc").hide();
 			}
-			else if(command == "HTOG"){
+			else if(command == "HTOG" || command == "SCRIPT"){
 				$("#path").show();
 				$("#filename").hide();
 				$("#file").show();
@@ -124,13 +122,6 @@
 				$("#file").hide();
 				$("#ssname").show();
 				$("#ssdesc").show();
-			}
-			else if(command == "SCRIPT"){
-				$("#path").hide();
-				$("#filename").hide();
-				$("#file").show();
-				$("#ssname").hide();
-				$("#ssdesc").hide();
 			}
 			else{
 				$("#path").hide();
