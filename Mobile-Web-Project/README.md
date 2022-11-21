@@ -1,1 +1,1 @@
-# mobweb-rps
+# Mobile Web Application Project
