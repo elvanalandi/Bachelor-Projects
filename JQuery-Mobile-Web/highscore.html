@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Rock Paper Scissor</title>
+
+	<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	
+	<!-- PWA DEPENDACIES -->
+	<link rel="js" type="/sw.js" href="">
+	<link rel="manifest" href="/manifest.json">
+	<script src="/src/js/app.js"></script>
+	<style>
+		.ui-table-columntoggle-btn {
+		    display: none !important;
+		}
+	</style>
+</head>
+<body onload="load()">
+	<div data-role="page">
+		<div data-role="header">
+				<div data-role="navbar">
+				    <ul>
+				        <li><a href="index.html" rel="external">Home</a></li>
+				        <li><a href="highscore.html" class="ui-btn-active" rel="external">Highscore</a></li>
+				    </ul>
+				</div>
+		</div>
+
+		<div role="main" class="ui-content">
+			<h2 style="text-align: center">High Score</h2>
+    		<table data-role="table" id="table-column-toggle" data-mode="columntoggle" class="ui-responsive table-stroke">
+				<thead>
+					<tr>
+						<th>Rank</th>
+						<th>Nickname</th>
+						<th>Score</th>
+					</tr>
+				</thead>
+				<tbody id="highfive">
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<script>
+	  if ('serviceWorker' in navigator) {
+	    console.log("Will the service worker register?");
+	    navigator.serviceWorker.register('sw.js')
+	      .then(function(reg){
+	        console.log("Yes, it did.");
+	      }).catch(function(err) {
+	        console.log("No it didn't. This happened: ", err)
+	      });
+	  }
+	</script>
+
+	<script type="text/javascript">
+		var high=[];
+
+		function load(){
+			if (localStorage.getItem("high")) {
+				high = JSON.parse(localStorage.getItem("high"));
+				calculateScores();
+			}
+			else{
+				resetScore();
+			}
+		}
+
+		function displayScores() {
+			$("#highfive").html("<tr><td>1</td><td>"+high[0].nick+"</td><td>"+high[0].score+"</td></tr>"+
+				"<tr><td>2</td><td>"+high[1].nick+"</td><td>"+high[1].score+"</td></tr>"+
+				"<tr><td>3</td><td>"+high[2].nick+"</td><td>"+high[2].score+"</td></tr>"+
+				"<tr><td>4</td><td>"+high[3].nick+"</td><td>"+high[3].score+"</td></tr>"+
+				"<tr><td>5</td><td>"+high[4].nick+"</td><td>"+high[4].score+"</td></tr>");
+			localStorage.removeItem("nickname");
+			localStorage.removeItem("score");
+		}
+
+		function resetScore() {
+		    high = [{"nick": "-", "score": "0"},
+			    {"nick": "-", "score": "0"},
+			    {"nick": "-", "score": "0"},
+			    {"nick": "-", "score": "0"},
+			    {"nick": "-", "score": "0"}];
+		    var items = JSON.stringify(high);
+		    localStorage.setItem("high", items);
+		    displayScores();
+		    //console.log(items);
+		  }
+		  
+		function calculateScores(){
+			var nick = localStorage["nickname"];
+			var score =  localStorage["score"];
+			high.push({"nick":nick, "score":score});
+		    //high.sort(function(o1,o2){return o1.score-o2.score}); //low to high
+		    high.sort(function(o1,o2){return o2.score-o1.score}); //high to low
+		    //high.shift(); //removes lowest at left, for low to high
+		    high.pop(); //removes lowest at right, for high to low
+		    var items = JSON.stringify(high);
+		    localStorage.setItem("high", items);
+		    displayScores();
+		}
+	</script>
+</body>
+</html>
