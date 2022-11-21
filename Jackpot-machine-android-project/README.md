@@ -1,1 +1,1 @@
-# elvan
+# Jackpot Machine Project for Android
