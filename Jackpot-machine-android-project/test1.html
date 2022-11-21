@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel=stylesheet href=jquery.mobile-1.4.5.min.css>
+	<script src=jquery.js></script>
+	<script src=jquery.mobile-1.4.5.js></script>
+	<script>
+
+	
+		$(document).ready(function(){
+			hexly.init();
+		});	
+		
+		
+		var hexly = {
+
+			myHexInput: null,
+			myRGBInput: null,
+			myRGBLabel: null,
+			
+			init: function() {
+				//identify commonly used objects
+				this.myHexInput = document.getElementById('hex-value');
+				this.myRGBInput = document.getElementById('rgb-value');
+				this.myRGBLabel = document.getElementById('rgb-label');
+				//bind evaluation function to hex input typing
+				$(this.myHexInput).keyup(hexly.evaluateHexInput);
+				//initialize focus to the hex input
+				this.myHexInput.focus();
+				//initialize the self-dismissing message
+				//TODO: Find a better messaging plugin or make one
+				$("#jbar-1").bar({
+					color 			 : '#333',
+					background_color : '#FFF8E5',
+					removebutton     : true,
+					message			 : "Woops, hex values can't be more than 6 characters.",
+					time			 : 4000
+				});
+				$("#jbar-2").bar({
+					color 			 : '#333',
+					background_color : '#FFF8E5',
+					removebutton     : true,
+					message			 : "Woops, you entered an invalid hex character.",
+					time			 : 4000
+				});
+			},
+			//function to convert rgb to hex
+			rgbToHex: function(r, g, b) {
+				return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+			},
+			//function to conver hex to rgb
+			hexToRgb: function(hex) {
+				var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+			    return result ? {
+			        r: parseInt(result[1], 16),
+			        g: parseInt(result[2], 16),
+			        b: parseInt(result[3], 16),
+			        rgb: parseInt(result[1], 16) + ", " + parseInt(result[2], 16) + ", " + parseInt(result[3], 16)
+			    } : null;
+			},
+			//function to determine input, and act accordingly
+			evaluateHexInput: function() {
+				var clearBar = true;
+				var interpretedValue;
+				var alphaNum = hexly.stripNonNumeric(hexly.myHexInput.value);
+				var x = alphaNum.length;
+				
+				var invalidCharsFound = /[^a-f0-9]/i.test(alphaNum)
+				
+				switch(true) {
+					case (invalidCharsFound):
+						clearBar = false;
+						$("#jbar-2").click();
+						hexly.clearRgbInput();
+						hexly.myRGBLabel.innerHTML = 'RGB Value';
+						break;
+					case (x == 2|x == 1|x == 4|x == 5): //implied zeros for 3-6
+						hexly.clearRgbInput();
+						hexly.myRGBLabel.innerHTML = 'RGB Value';
+						break;
+					case (x == 3): //make 123 into 112233
+						hexly.updateRgbInput(alphaNum.charAt(0) + alphaNum.charAt(0) + alphaNum.charAt(1) + alphaNum.charAt(1) + alphaNum.charAt(2) + alphaNum.charAt(2));
+						break;
+					case (x == 6): //full input
+						hexly.updateRgbInput(alphaNum);
+						break;
+					case (x > 6):
+						clearBar = false;
+						$("#jbar-1").click();
+						hexly.clearRgbInput();
+						hexly.myRGBLabel.innerHTML = 'RGB Value';
+						break;
+					default:
+						hexly.clearRgbInput();
+				}
+				if (clearBar) {
+					$('.jbar').fadeOut(150,function(){
+						$(this).remove();
+					});
+				}		
+			},
+			updateRgbInput: function(hexVal) {
+				hexly.myRGBInput.value = hexly.hexToRgb(hexVal).rgb;
+				$('#pantone').fadeIn(150);
+				$('#pantone .color-area').css('background','#' + hexVal);
+
+				//#pantone .color-area
+				this.myRGBLabel.innerHTML = 'RGB Value for #' + hexVal;
+				$('#pantone .text-area p.value').html('#' + hexVal);
+			},
+			interpretInput: function() {
+
+			},
+			stripNonNumeric: function(userInput) {
+				var m_strOut = new String(userInput); 
+	    		m_strOut = m_strOut.replace(/[^a-zA-Z 0-9]+/g,''); 
+	    		return m_strOut;			
+    		},
+    		clearRgbInput: function() {
+				hexly.myRGBInput.value = '';
+				document.getElementById('rgb-preview').style.background = 'none';
+				$('#pantone').fadeOut(150);
+    		}
+		}
+		
+	
+	</script>
+<script>
+	function mylinkfunction1() {
+		window.location.href='#win1';
+       }
+	function mylinkfunction2() {
+		window.location.href='#win2';
+       }
+    $( "#mypanel" ).trigger( "updatelayout" );
+    $( document ).on( "click", ".show-page-loading-msg", function() {
+    var $this = $( this ),
+        theme = $this.jqmData( "theme" ) || $.mobile.loader.prototype.options.theme,
+        msgText = $this.jqmData( "msgtext" ) || $.mobile.loader.prototype.options.text,
+        textVisible = $this.jqmData( "textvisible" ) || $.mobile.loader.prototype.options.textVisible,
+        textonly = !!$this.jqmData( "textonly" );
+        html = $this.jqmData( "html" ) || "";
+    $.mobile.loading( "show", {
+            text: msgText,
+            textVisible: textVisible,
+            theme: theme,
+            textonly: textonly,
+            html: html
+    });
+})
+.on( "click", ".hide-page-loading-msg", function() {
+    $.mobile.loading( "hide" );
+});
+</script>
+<script>
+	(function(){
+
+    var ConvertBase = function (num) {
+        return {
+            from : function (baseFrom) {
+                return {
+                    to : function (baseTo) {
+                        return parseInt(num, baseFrom).toString(baseTo);
+                    }
+                };
+            }
+        };
+    };
+        
+    // binary to decimal
+    ConvertBase.bin2dec = function (num) {
+        return ConvertBase(num).from(2).to(10);
+    };
+    
+    // binary to hexadecimal
+    ConvertBase.bin2hex = function (num) {
+        return ConvertBase(num).from(2).to(16);
+    };
+    
+    // decimal to binary
+    ConvertBase.dec2bin = function (num) {
+        return ConvertBase(num).from(10).to(2);
+    };
+    
+    // decimal to hexadecimal
+    ConvertBase.dec2hex = function (num) {
+        return ConvertBase(num).from(10).to(16);
+    };
+    
+    // hexadecimal to binary
+    ConvertBase.hex2bin = function (num) {
+        return ConvertBase(num).from(16).to(2);
+    };
+    
+    // hexadecimal to decimal
+    ConvertBase.hex2dec = function (num) {
+        return ConvertBase(num).from(16).to(10);
+    };
+    
+    this.ConvertBase = ConvertBase;
+    
+})(this);
+
+$("#dec2bin").on( "click", function() {
+	var number1 = document.getElementById('#number-1');
+    $("#number-2").val(ConvertBase.dec2bin(number1));
+});
+
+$("#dec2hex").on( "click", function() {
+	var number1 = document.getElementById('#number-1');
+    $("#number-3").val(ConvertBase.dec2hex(number1));
+});
+
+</script>
+</head>
+
+<body>
+	<div data-role=page id=win1>
+		<div data-role=header>
+			<div class="ui-grid-b ui-responsive">
+			<fieldset class="ui-grid-b" align=center>
+    			<div class="ui-block-a"><a href="#win1"><input type="button" value="Kalkulator"></div></a>
+    		<div class="ui-block-b"><a href="#win2"><input type="button" value="Hex to RGB"></div></a>
+    		<div class="ui-block-c"><a href="#win3"><input type="button" value="Rangkuman"></div></a>
+			</fieldset>
+		</div>
+		</div>
+		
+		<div data-role=content>
+			<h1>Option Menu di Panel</h1>
+			<button class="show-page-loading-msg" data-theme="a" data-textonly="false" data-textvisible="true" data-msgtext="Loading theme a" data-inline="true">Page Loader</button>
+			<button class="hide-page-loading-msg" data-inline="true" data-icon="delete">Hide Loader</button>
+
+		<div data-role="panel" id="mypanel" data-display="overlay" data-position="right">
+			<div data-role="tabs">
+		   <select name="select-choice-1" id="select-choice-1"">
+		      <option value="kalkulator">Kalkulator</option>
+		      <option value="warna">Warna RGB</option>
+		      <option value="rangkuman">Rangkuman materi</option>
+		   </select>
+		</div>
+		</div>
+		<br>
+		<a href="#mypanel" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-bars">Open Panel</a>
+<br>
+<br>
+<br>
+		<ul data-role="listview">
+    			<li><a href="#win1">Kalkulator</a></li>
+    			<li><a href="#win2">Hex to RGB</a></li>
+    			<li><a href="#win3">Rangkuman Materi</a></li>
+			</ul>
+<br>
+		<form>
+				<label for="number-1">Decimal</label>
+     			<input type="number" data-clear-btn="false" name="number-1" id="number-1" value="">
+     			<label for="number-2">Binary</label>
+     			<input type="number" data-clear-btn="false" name="number-2" id="number-2" value="">
+     			<label for="number-3">Hexadecimal</label>
+     			<input type="text" data-clear-btn="false" name="number-3" id="number-3" value="">
+     			<input type=button id="dec2bin" value="Decimal to Binary">
+     			<input type=button id="dec2hex" value="Decimal to Hexadecimal">
+ 			</form>	
+		</div>
+	</div>
+	<div data-role=page id=win2>
+			<div data-role=header>
+			<div class="ui-grid-b ui-responsive">
+			<fieldset class="ui-grid-b" align=center>
+    			<div class="ui-block-a"><a href="#win1"><input type="button" value="Kalkulator"></div></a>
+    		<div class="ui-block-b"><a href="#win2"><input type="button" value="Hex to RGB"></div></a>
+    		<div class="ui-block-c"><a href="#win3"><input type="button" value="Rangkuman"></div></a>
+			</fieldset>
+		</div>
+		</div>
+
+		<div data-role="panel" id="mypanel" data-display="overlay" data-position="right">
+			<div data-role="tabs">
+		   <select name="select-choice-1" id="select-choice-1"">
+		      <option value="kalkulator">Kalkulator</option>
+		      <option value="warna">Warna RGB</option>
+		      <option value="rangkuman">Rangkuman materi</option>
+		   </select>
+		</div>
+		</div>
+		<a href="#mypanel" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-bars">Open Panel</a>
+<br>
+		<ul data-role="listview">
+    			<li><a href="#win1">Kalkulator</a></li>
+    			<li><a href="#win2">Hex to RGB</a></li>
+    			<li><a href="#win3">Rangkuman Materi</a></li>
+			</ul>
+<br>
+			<form>
+				<label for="rgb">Hex to RGB</label>
+				<label for="slider-1">Input slider :</label>
+				<input type="range" name="slider-1" id="slider-1" value="60" min="0" max="100">
+				<input type="range" name="slider-2" id="slider-2" value="60" min="0" max="100">
+				<input type="range" name="slider-3" id="slider-3" value="60" min="0" max="100">
+     			<label for="slider-1">Input hex : </label><input id="hex-value" placeholder="Ex. #110022" type="text">
+     			<input id="rgb-value" type="text">
+     			<div id="rgb-preview"></div>
+ 			</form>
+	</div>
+	<div data-role=page id=win3>
+		<div data-role=header>
+			<div class="ui-grid-b ui-responsive">
+			<fieldset class="ui-grid-b" align=center>
+    			<div class="ui-block-a"><a href="#win1"><input type="button" value="Kalkulator"></div></a>
+    		<div class="ui-block-b"><a href="#win2"><input type="button" value="Hex to RGB"></div></a>
+    		<div class="ui-block-c"><a href="#win3"><input type="button" value="Rangkuman"></div></a>
+			</fieldset>
+		</div>
+		</div>
+
+		<div data-role="panel" id="mypanel" data-display="overlay" data-position="right">
+			<div data-role="tabs">
+		   <select name="select-choice-1" id="select-choice-1">
+		      <option value="kalkulator">Kalkulator</option>
+		      <option value="warna">Warna RGB</option>
+		      <option value="rangkuman">Rangkuman materi</option>
+		   </select>
+		</div>
+		</div>
+		<a href="#mypanel" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-btn-icon-left ui-icon-bars">Open Panel</a>
+
+			<ul data-role="listview">
+    			<li><a href="#win1">Kalkulator</a></li>
+    			<li><a href="#win2">Hex to RGB</a></li>
+    			<li><a href="#win3">Rangkuman Materi</a></li>
+			</ul>
+
+			<div data-role=content>
+				<p>1.	git init : untuk melakukan inisialisasi git
+Terdapat repository yang merupakan directory yang diinisialisasi git untuk memulai version controlling file kita
+<br>
+2.	git status : untuk mengecek status dari file dan folder
+Staged : file telah siap dicommit
+Unstaged : file belum siap dicommit
+<br>
+3.	git add octocat.txt : untuk memasukkan file ke staging area
+git add –A. -> add semua file , dot untuk menunjukan di directory sekarang , -A untuk memasukkan file yang telah dihapus
+<br>
+4.	git reset (nama file) : untuk menghapus files dari staging area
+Staging area adalah tempat untuk melakukan grouping files bersamaan sebelum di commit
+<br>
+5.	git commit –m “Add cute octocat story”
+commit untuk mengecek timeline dari perubahan yang kita lakukan atau orang lain lakukan dan merupakan snapshot dari repository yang kita buat
+<br>
+6.	git add ‘*txt’ : untuk memasukkan semua data ke directory
+<br>
+7.	git commit  -m ‘Add all the octocat txt files’ : untuk commit semua files<br>
+
+8.	git log : history
+git log --summary : untuk melihat informasi lebih seperti file yang baru dibuat atau file yang baru didelete
+<br>
+9.	git remote add origin (repository url): untuk membuat repository baru , origin untuk nama main
+<br>
+10.	git push –u origin master : memasukkan file ke git dan setelahnya hanya perlu git push karena ada command –u , origin untuk local<br>
+11.	git pull origin master : untuk menarik files yang berada di repository
+<br>
+12.	git diff head : untuk mengecek perubahan dari file yang kita rubah dalam waktu yang paling dekat<br>
+13. git checkout --(target): untuk mengundo file<br>
+14. git branch : untuk membuat temporary files<br>
+15. git checkout (nama branch) : untuk memindah branch<br>
+16.	git rm ‘*.txt’ : untuk menghapus semua files<br>
+
+17.	git commit –m “remove all the cats” : untuk mengcommit remove files<br>
+
+18.	git merge (nama branch) : untuk menggabungkan branch<br>
+19.	git branch –d (nama branch) : delete branch<br>
+20.	git reset octofamily/octodog.txt : untuk remove octodog.txt<br>
+21.	git diff –staged : untuk membandingkan perbedaan files yang ada di stage
+</p>
+			</div>
+	</div>
+</body>
+</html>
